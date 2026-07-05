@@ -3,6 +3,17 @@ package student;
 import game.EscapeState;
 import game.ExplorationState;
 
+/**
+ * Provides Jeremy's behaviour for the two phases of the game.
+ * <p>
+ * This class is deliberately thin: it owns the public entry points required by
+ * the game engine and delegates the actual work to a dedicated strategy object
+ * for each phase. Keeping the algorithms in their own classes keeps each unit
+ * small, independently testable, and easy to swap out for a smarter version.
+ *
+ * @see GuidedExplorer for the exploration strategy
+ * @see EscapeRouter for the escape strategy
+ */
 public class Explorer {
 
     /**
@@ -36,7 +47,7 @@ public class Explorer {
      * @param state the information available at the current state
      */
     public void explore(ExplorationState state) {
-        //TODO : Explore the cavern and find the orb
+        new GuidedExplorer().explore(state);
     }
 
     /**
@@ -63,6 +74,6 @@ public class Explorer {
      * @param state the information available at the current state
      */
     public void escape(EscapeState state) {
-        //TODO: Escape from the cavern before time runs out
+        new EscapeRouter().escape(state);
     }
 }
