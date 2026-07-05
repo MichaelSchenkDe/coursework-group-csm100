@@ -74,6 +74,6 @@ public class Explorer {
      * @param state the information available at the current state
      */
     public void escape(EscapeState state) {
-        new EscapeRouter().escape(state);
+        new GoldEscaper().escape(state);
     }
 }
