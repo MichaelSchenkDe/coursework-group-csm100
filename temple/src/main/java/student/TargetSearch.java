@@ -42,7 +42,7 @@ public final class TargetSearch{
    * beasue it is weighted graph adn time is 
    * directly related to edge weight during escape.
    */
-  private static final int MAX_DEPTH=5;
+  private static final int MAX_DEPTH=12;
 
   /**
    * Precompute the shortest distance for every node
