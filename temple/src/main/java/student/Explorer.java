@@ -44,30 +44,31 @@ public class Explorer {
    */
   public void explore(ExplorationState state) {
     //TODO : Explore the cavern and find the orb
-    Set<Long>visited=new HashSet<>();
-    dfs(state,state.getCurrentLocation(),visited);
+    // Set<Long>visited=new HashSet<>();
+    // dfs(state,state.getCurrentLocation(),visited);
+    ExploreSolver.solve(state);
   }
 
-  private boolean  dfs(ExplorationState state, long curr, Set<Long>visited){
-    visited.add(curr);
-    if(state.getDistanceToTarget()==0){
-      return true ;
-    }
+  // private boolean  dfs(ExplorationState state, long curr, Set<Long>visited){
+  //   visited.add(curr);
+  //   if(state.getDistanceToTarget()==0){
+  //     return true ;
+  //   }
 
-    for(NodeStatus neighbor : state.getNeighbours()){
-      long next=neighbor.nodeID();
+  //   for(NodeStatus neighbor : state.getNeighbours()){
+  //     long next=neighbor.nodeID();
 
-      if (!visited.contains(next)){
+  //     if (!visited.contains(next)){
         
-        state.moveTo(next);
-        if(dfs(state,next,visited)){
-          return true;
-        }
-        state.moveTo(curr);
-      }
-    }
-    return false;
-  }
+  //       state.moveTo(next);
+  //       if(dfs(state,next,visited)){
+  //         return true;
+  //       }
+  //       state.moveTo(curr);
+  //     }
+  //   }
+  //   return false;
+  // }
   
   /**
    * Escape from the cavern before the ceiling collapses, trying to collect as much

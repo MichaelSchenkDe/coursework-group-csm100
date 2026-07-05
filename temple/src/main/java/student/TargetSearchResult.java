@@ -182,13 +182,14 @@ public final class TargetSearchResult{
     double thisRatio=this.getGoldRatio();
     double otherRatio=other.getGoldRatio();
 
-    if(Double.compare(thisRatio,otherRatio)>0){
+    if(Double.compare(thisRatio,otherRatio)>=0){
       return true;
     }
     if(Double.compare(thisRatio,otherRatio)<0){
       return false;
     }
 
+    
     /*
      * If ratios are identical
      * select the branch requiring less travel cost
