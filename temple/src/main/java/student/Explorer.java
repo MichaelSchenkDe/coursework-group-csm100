@@ -2,6 +2,20 @@ package student;
 
 import game.EscapeState;
 import game.ExplorationState;
+import game.Node;
+import game.NodeStatus;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 
 public class Explorer {
 
@@ -36,7 +50,67 @@ public class Explorer {
      * @param state the information available at the current state
      */
     public void explore(ExplorationState state) {
-        //TODO : Explore the cavern and find the orb
+        Queue<Long> queue = new ArrayDeque<>();
+        Set<Long> visited = new HashSet<>();
+        Map<Long, Long> parent = new HashMap<>();
+
+        long start = state.getCurrentLocation();
+        visited.add(start);
+        queue.add(start);
+        parent.put(start, null);
+
+        while (!queue.isEmpty()) {
+            long target = queue.peek();
+            moveTo(state, target, start, parent);
+
+            if (state.getDistanceToTarget() == 0) {
+                return;
+            }
+
+            queue.poll();
+            long current = state.getCurrentLocation();
+
+            for (NodeStatus neighbour : state.getNeighbours()) {
+                long id = neighbour.nodeID();
+                if (neighbour.distanceToTarget() == 0) {
+                    state.moveTo(id);
+                    return;
+                }
+                if (!visited.contains(id)) {
+                    visited.add(id);
+                    parent.put(id, current);
+                    queue.add(id);
+                }
+            }
+        }
+    }
+
+    private void moveTo(ExplorationState state, long target, long start, Map<Long, Long> parent) {
+        long current = state.getCurrentLocation();
+        if (current == target) {
+            return;
+        }
+
+        List<Long> pathFromStart = new ArrayList<>();
+        for (Long node = target; node != null; node = parent.get(node)) {
+            pathFromStart.add(node);
+        }
+        Collections.reverse(pathFromStart);
+
+        int currentIndex = pathFromStart.indexOf(current);
+        if (currentIndex >= 0) {
+            for (int i = currentIndex + 1; i < pathFromStart.size(); i++) {
+                state.moveTo(pathFromStart.get(i));
+            }
+            return;
+        }
+
+        while (state.getCurrentLocation() != start) {
+            state.moveTo(parent.get(state.getCurrentLocation()));
+        }
+        for (int i = 1; i < pathFromStart.size(); i++) {
+            state.moveTo(pathFromStart.get(i));
+        }
     }
 
     /**
@@ -63,6 +137,47 @@ public class Explorer {
      * @param state the information available at the current state
      */
     public void escape(EscapeState state) {
-        //TODO: Escape from the cavern before time runs out
+        // TEMPORARY: shortest-path escape stub for end-to-end testing only.
+        // Replace with the real gold-aware escape implementation later.
+        List<Node> path = shortestPath(state.getCurrentNode(), state.getExit());
+        for (int i = 1; i < path.size(); i++) {
+            state.moveTo(path.get(i));
+        }
+    }
+
+    private List<Node> shortestPath(Node start, Node goal) {
+        Map<Long, Integer> dist = new HashMap<>();
+        Map<Long, Node> parent = new HashMap<>();
+        PriorityQueue<Node> frontier = new PriorityQueue<>(Comparator.comparingInt(
+            node -> dist.getOrDefault(node.getId(), Integer.MAX_VALUE)
+        ));
+
+        dist.put(start.getId(), 0);
+        parent.put(start.getId(), null);
+        frontier.add(start);
+
+        while (!frontier.isEmpty()) {
+            Node current = frontier.poll();
+            int currentDist = dist.get(current.getId());
+            if (current.equals(goal)) {
+                break;
+            }
+
+            for (Node neighbour : current.getNeighbours()) {
+                int nextDist = currentDist + current.getEdge(neighbour).length();
+                if (nextDist < dist.getOrDefault(neighbour.getId(), Integer.MAX_VALUE)) {
+                    dist.put(neighbour.getId(), nextDist);
+                    parent.put(neighbour.getId(), current);
+                    frontier.add(neighbour);
+                }
+            }
+        }
+
+        List<Node> path = new ArrayList<>();
+        for (Node node = goal; node != null; node = parent.get(node.getId())) {
+            path.add(node);
+        }
+        Collections.reverse(path);
+        return path;
     }
 }
