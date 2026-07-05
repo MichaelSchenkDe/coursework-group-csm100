@@ -66,12 +66,13 @@ public class Explorer {
      * @param state the information available at the current state
      */
     public void escape(EscapeState state) {
+       
+
+        // Ajays code for escape method is commented out below. Tested and works with the explore. 
+
+        // Command for testing:  .\gradlew.bat ":temple:run" "-PchooseMain=main.TXTmain" "--args=-n 100 -s -4152836868077314850"
+
         /*
-
-        Ajays code for escape method is commented out below. Tested and works with the explore. 
-
-        Command for testing:  .\gradlew.bat ":temple:run" "-PchooseMain=main.TXTmain" "--args=-n 100 -s -4152836868077314850"
-
             if (state.getCurrentNode().getTile().getGold() > 0) {
                 state.pickUpGold();
             }
