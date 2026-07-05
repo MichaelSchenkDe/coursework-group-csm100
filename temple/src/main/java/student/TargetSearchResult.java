@@ -176,7 +176,7 @@ public final class TargetSearchResult{
 
   public boolean isBetterThan(TargetSearchResult other){
   
-    /**
+    /*
      * . Higher gold ratio wins 
      */
     double thisRatio=this.getGoldRatio();
@@ -189,7 +189,7 @@ public final class TargetSearchResult{
       return false;
     }
 
-    /**
+    /*
      * If ratios are identical
      * select the branch requiring less travel cost
      */
@@ -200,7 +200,7 @@ public final class TargetSearchResult{
       return false;
     }
 
-    /**
+    /*
      * If travelCost are identical
      * select the branch collecting more gold
      */
@@ -211,7 +211,7 @@ public final class TargetSearchResult{
       return false;
     }
 
-    /**
+    /*
      *  if both collect same gold,
      * select branch with future possibility
      * (this) can continue search
@@ -222,7 +222,7 @@ public final class TargetSearchResult{
     if(!this.canContinueSearch && other.canContinueSearch){
       return false;
     }
-    /**
+    /*
      * As final tie-breaker
      * select ther branch with more depth
      */

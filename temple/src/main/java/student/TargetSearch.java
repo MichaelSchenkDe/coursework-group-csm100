@@ -133,7 +133,7 @@ public final class TargetSearch{
     Node targetNode,Set<Node>visited, int currDepth,
     int remainingTime,int travelCost,int totalGold){
 
-    /**
+    /*
      * this is already safe 
      * collect the gold available at this current node 
      * this is safe every recursive call will perform this step
@@ -142,8 +142,12 @@ public final class TargetSearch{
      */
     totalGold+=currNode.getTile().getGold();
 
+    boolean canContinue=false;
+    if(currDepth==MAX_DEPTH){
+      canContinue=canContinueSearch(currNode,visited,remainingTime);
+    }
     
-    /**
+    /*
      * the current node is a valid stoppage point , so
      * evaluate TargetSearchResult for this node , which will 
      * represent the information available on this node 
@@ -151,33 +155,32 @@ public final class TargetSearch{
      * Now we have every property of current node 
      */
     TargetSearchResult targetResult=new TargetSearchResult
-      (totalGold,travelCost,currDepth,targetNode,
-      canContinueSearch(currNode,visited,remainingTime));
+      (totalGold,travelCost,currDepth,targetNode,canContinue);
     
-    /**
+    /*
      * stop once max depth has reached and return
      */
-    if(currDepth>=MAX_DEPTH){
+    if(currDepth==MAX_DEPTH){
       return targetResult;
     }
 
-    /**
+    /*
      * explore every neighbor node of current node 
      */
     for(Node neighbor : currNode.getNeighbours()){
-      /**
+      /*
        * ignore already visited nodes
        */
       if(visited.contains(neighbor)){
         continue;
       }
       
-      /**
+      /*
        * edge connecting the current node to this neighbor 
        */
       Edge edge=currNode.getEdge(neighbor);
 
-      /**
+      /*
        * simulates the behavior of move,
        * it is not a actual move 
        * means
@@ -189,7 +192,7 @@ public final class TargetSearch{
 
       int newRemainingTime=remainingTime-edge.length();
       
-      /**
+      /*
        * can this safely reach exit 
        */
       Integer exitDistance=exitDistanceMap.get(neighbor);
@@ -198,13 +201,13 @@ public final class TargetSearch{
         continue;//simply discard the neighbor 
       }
 
-      /**
+      /*
        * mark this neighbor as visited.
        * because safe to explore 
        */
       visited.add(neighbor);
 
-      /**
+      /*
        * recursive evaluation of this branch 
        * with new values , depth.
        */
@@ -212,13 +215,13 @@ public final class TargetSearch{
           targetNode,visited, currDepth+1,newRemainingTime ,
           newTravelCost, totalGold);
 
-      /**
+      /*
        * now we backtrae, this neighbor might be explored
        * from other branch as well so remove it from visited
        */
       visited.remove(neighbor);
 
-      /**
+      /*
        * compare this result with the earlier known result , 
        * a bracnh at last will return the best result.
        */
@@ -229,7 +232,7 @@ public final class TargetSearch{
     return targetResult;
   }
   
-  /**
+  /*
    * This will give us whether after 
    * evaluation of current branch(upto MAX_DEPTH)
    * whether  there is any possibility in future to browse
@@ -242,21 +245,21 @@ public final class TargetSearch{
     Set<Node>visited,int remainingTime){
   
     for(Node neighbor: currNode.getNeighbours()){
-      /**
+      /*
        * ignore already visited nodes
        */
       if(visited.contains(neighbor)){
         continue;
       }
       
-      /**
+      /*
        * edge connecting the current node to this neighbor 
        */
       Edge edge=currNode.getEdge(neighbor);
 
       int newRemainingTime=remainingTime-edge.length();
       
-      /**
+      /*
        * can this safely reach exit 
        */
       Integer exitDistance=exitDistanceMap.get(neighbor);

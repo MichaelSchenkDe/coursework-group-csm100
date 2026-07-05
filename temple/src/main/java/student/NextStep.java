@@ -40,7 +40,7 @@ public final class NextStep{
    *        The adjecent node that should be visited next 
    */
   public static Node nextStep(Node current,Node target, DijkstraResult dijkstraResult){
-    /**
+    /*
      * If we already standing on the target
      * no move is required 
      */
@@ -48,13 +48,13 @@ public final class NextStep{
       return current;
     }
     
-    /**
+    /*
      * Start tracing from the destination node 
      * (traceNode is on target)
      */
     Node traceNode=target;// the node currently being traced 
 
-    /**
+    /*
      * Walk backwards through the shortest path tree
      * until the parent of the currently traced node is the 
      * player's current location.
@@ -65,7 +65,7 @@ public final class NextStep{
       traceNode=dijkstraResult.getPrev(traceNode);
     }
 
-    /**
+    /*
      * traceNode is now the first node after the current node in 
      * the shortest path to the target 
      */

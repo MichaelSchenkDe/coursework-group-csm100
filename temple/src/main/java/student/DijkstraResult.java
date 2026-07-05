@@ -47,7 +47,7 @@ public final class DijkstraResult{
   /**
    * A new immutable Dijkstra result
    * 
-   * @param distancemap 
+   * @param distanceMap 
    *        Shortest distance form source node to every rechable node
    * @param prevMap 
    *        parent nodes (will need this in creating the path)

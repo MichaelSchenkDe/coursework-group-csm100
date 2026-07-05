@@ -55,16 +55,16 @@ public final class SelectNextTarget{
     
     TargetSearchResult bestResult=null;
 
-    /**
+    /*
      * evaluate every safe branch
      */
     for(Node neighbor:currNode.getNeighbours()){
-      /**
+      /*
        * edge connecting the current node to this neighbor 
        */
       Edge edge=currNode.getEdge(neighbor);
 
-      /**
+      /*
        * simulates the behavior of move,
        * it is not a actual move  
        * remainingTime decreases by edge weight 
@@ -73,7 +73,7 @@ public final class SelectNextTarget{
       int travelCost=edge.length();
 
       int newRemainingTime=remainingTime-travelCost;
-      /**
+      /*
        * can this neighbor safely reach exit 
        */
       Integer exitDistance=exitDistanceMap.get(neighbor);
@@ -81,13 +81,13 @@ public final class SelectNextTarget{
       if(exitDistance==null || newRemainingTime<exitDistance){
         continue;//simply discard the neighbor 
       }
-      /**
+      /*
        * Now evaluate this safe branch
        */
       TargetSearchResult result=targetSearch.evaluateTarget(
         neighbor,newRemainingTime,travelCost);
       
-      /**
+      /*
        * Keep the ebst result
        */
       if(bestResult==null ||
@@ -95,13 +95,13 @@ public final class SelectNextTarget{
         bestResult=result;    
       }
     }
-    /**
+    /*
      * if no safe branch exist 
      */
     if(bestResult==null){
       return null;
     }
-    /**
+    /*
      * return the neighbor node 
      * representing the best branch 
      */

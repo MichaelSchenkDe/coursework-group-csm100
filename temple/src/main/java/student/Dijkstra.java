@@ -30,19 +30,19 @@ public final class Dijkstra{
    * to every rechable node 
    */
   public DijkstraResult computePath(Node source){
-    /**
+    /*
      * Stores the shortest known distance from soure
      * node to every reachable node 
      */
     Map<Node, Integer>distanceMap=new HashMap<>();
 
-    /**
+    /*
      * Stores the parent nodes (will need this in creating
      * the path)
      */
     Map<Node, Node>prevMap=new HashMap<>();
 
-    /**
+    /*
      * Use prioity queue, bcasue we ened small distance first
      * How to compare this node with distance, obviously we need a comparator
      * nodeDistance has nodeDistance.distance, we can compare that 
@@ -51,21 +51,21 @@ public final class Dijkstra{
                         new PriorityQueue<>(Comparator.comparingInt(
                         nodeDistance->nodeDistance.getDistance()));
     
-    /**
+    /*
      * distance from source to itself is always zero
      */
     distanceMap.put(source,0);
 
-    /**
+    /*
      * Insert the source node into the priority queue
      */
     priorityQueue.add(new NodeDistance(source,0));
 
-    /**
+    /*
      * Continue until every reachable node has been processed
      */
     while(!priorityQueue.isEmpty()){
-      /**
+      /*
        * Remove the node with the smallest known
        * distance 
        */
@@ -73,7 +73,7 @@ public final class Dijkstra{
   
       Node currNode=nodeDistance.getNode();
       
-      /**
+      /*
        * Ignore the old version of node
        */
       if(nodeDistance.getDistance()>distanceMap.get(currNode)){
@@ -82,22 +82,22 @@ public final class Dijkstra{
 
       // we will have new version once we will cehck all the edge things
       
-      /**
+      /*
        * Visit every neighbor node 
        */
       for(Node neighbor:currNode.getNeighbours()){
         
-        /**
+        /*
          * Get the edge connecting two nodes
          */ 
         Edge edge=currNode.getEdge(neighbor);
 
-        /**
+        /*
          * Distance if we travel through the current node 
          */
         int newDistance=distanceMap.get(currNode)+edge.length();
 
-        /**
+        /*
          * Have we discovered the shortest route 
          */
         Integer oldDistance=distanceMap.get(neighbor);
@@ -107,26 +107,26 @@ public final class Dijkstra{
         // or this distance is less than already exisiting distance
 
         if( oldDistance==null || 
-          newDistnce < oldDistance){
+          newDistance < oldDistance){
           
-          /**
+          /*
            * update the shortest distance
            * add that neighbor->distance
            */
-          distanceMap.put(neighbor,newDistnce);
+          distanceMap.put(neighbor,newDistance);
 
-          /**
+          /*
            * remember the parent used to reach this node 
            * add prev Node for path creation 
            */
           prevMap.put(neighbor,currNode);
 
-          /**
+          /*
            * Insert the new updated distance 
            * Older entries will later be ignored automatically
            * add this in priority queue
            */
-          priorityQueue.add(new NodeDistance(neighbor,newDistnce));
+          priorityQueue.add(new NodeDistance(neighbor,newDistance));
         }
       } 
     }
