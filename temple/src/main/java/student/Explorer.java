@@ -44,6 +44,29 @@ public class Explorer {
    */
   public void explore(ExplorationState state) {
     //TODO : Explore the cavern and find the orb
+    Set<Long>visited=new HashSet<>();
+    dfs(state,state.getCurrentLocation(),visited);
+  }
+
+  private boolean  dfs(ExplorationState state, long curr, Set<Long>visited){
+    visited.add(curr);
+    if(state.getDistanceToTarget()==0){
+      return true ;
+    }
+
+    for(NodeStatus neighbor : state.getNeighbours()){
+      long next=neighbor.nodeID();
+
+      if (!visited.contains(next)){
+        
+        state.moveTo(next);
+        if(dfs(state,next,visited)){
+          return true;
+        }
+        state.moveTo(curr);
+      }
+    }
+    return false;
   }
   
   /**
