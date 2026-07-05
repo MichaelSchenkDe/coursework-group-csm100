@@ -24,12 +24,12 @@ import java.util.*;
  *                rechable node
  * 2. prevMap: parent nodes (will need this in creating the path)
  */
-public class Dijkstra{
+public final class Dijkstra{
   /**
    * Computes the shortest path from one source node 
    * to every rechable node 
    */
-  public DijkstraResult dijkstra(Node source){
+  public DijkstraResult computePath(Node source){
     /**
      * Stores the shortest known distance from soure
      * node to every reachable node 
@@ -95,7 +95,7 @@ public class Dijkstra{
         /**
          * Distance if we travel through the current node 
          */
-        int newDistnce=distanceMap.get(currNode)+edge.length();
+        int newDistance=distanceMap.get(currNode)+edge.length();
 
         /**
          * Have we discovered the shortest route 
@@ -106,7 +106,7 @@ public class Dijkstra{
         // check if thi distance path already there
         // or this distance is less than already exisiting distance
 
-        if(! oldDistance==null || 
+        if( oldDistance==null || 
           newDistnce < oldDistance){
           
           /**

@@ -43,15 +43,7 @@ public final class TargetSearchResult{
   private final int travelCost;
 
   /**
-   * A boolean to indicate whether this branch will 
-   * provide us safe exit , if not this is set to false 
-   * otherwise true.
-   * Safe escape is our highest priority.
-   */
-  private final boolean safe;
-
-  /**
-   * Best decided target node for next move,
+   * original neighbor node for next move,
    * (assuming each neighbor as target, we will decide
    * where to move based on results of each naighbor)
    * after careful consideration of all above
@@ -60,16 +52,14 @@ public final class TargetSearchResult{
   private final Node targetNode;
 
   /**
-   * Maximum dfs depth reached while exploring 
+   * dfs depth reached while exploring 
    * this branch 
    */
   private final int searchDepth;
 
   /**
-   * There can be possiblity that a neighbor might not have
-   * sufficient depth, in this case if time permit we can 
-   * safely select the neighbor with more depth to enhance
-   * gold points.
+   * Whether stoppage point of this branch has 
+   * unvisited neighbor 
    * 
    * To indicate whether the branch can continue beyond the
    * current search limit 
@@ -87,12 +77,9 @@ public final class TargetSearchResult{
    *        Total safe collectable gold form a branch 
    * @param travelCost
    *        Time required to collect the gold 
-   * @param safe 
-   *        A boolean to indicate whether this branch will 
-   *        provide us safe exit
    * @param targetNode 
    *        target node during the search for 
-   *        selection of next move
+   *        selection of next move, original neighbor 
    * @param searchDepth
    *        Maximum dfs depth reached while exploring
    *        this branch 
@@ -101,11 +88,9 @@ public final class TargetSearchResult{
    *        current search limit       
    */
   public TargetSearchResult(int totalGold,int travelCost,
-      boolean safe, boolean canContinueSearch,
-      int searchDepth,Node targetNode){
+      int searchDepth,Node targetNode,boolean canContinueSearch){
     this.totalGold=totalGold;
     this.travelCost=travelCost;
-    this.safe=safe;
     this.canContinueSearch=canContinueSearch;
     this.searchDepth=searchDepth;
     this.targetNode=targetNode;
@@ -143,14 +128,6 @@ public final class TargetSearchResult{
       return totalGold;
     }
     return (double)totalGold/travelCost;
-  }
-
-  /**
-   * Returns whether this branch is safe or not 
-   * @return true if safe
-   */
-  public boolean isSafe(){
-    return safe;
   }
 
   /**
@@ -198,17 +175,9 @@ public final class TargetSearchResult{
    */
 
   public boolean isBetterThan(TargetSearchResult other){
+  
     /**
-     * 1. a safe branch is better thatn other unsafe branch
-     */
-    if(this.safe && ! other.safe){
-      return true;
-    }
-    if(!this.safe && other.safe){
-      return false;
-    }
-    /**
-     * 2. Higher gold ratio wins 
+     * . Higher gold ratio wins 
      */
     double thisRatio=this.getGoldRatio();
     double otherRatio=other.getGoldRatio();
@@ -230,15 +199,6 @@ public final class TargetSearchResult{
     if(this.travelCost > other.travelCost){
       return false;
     }
-    /**
-     *  (this) can continue search
-     */
-    if(this.canContinueSearch && ! other.canContinueSearch){
-      return true;
-    }
-    if(!this.canContinueSearch && other.canContinueSearch){
-      return false;
-    }
 
     /**
      * If travelCost are identical
@@ -251,6 +211,17 @@ public final class TargetSearchResult{
       return false;
     }
 
+    /**
+     *  if both collect same gold,
+     * select branch with future possibility
+     * (this) can continue search
+     */
+    if(this.canContinueSearch && ! other.canContinueSearch){
+      return true;
+    }
+    if(!this.canContinueSearch && other.canContinueSearch){
+      return false;
+    }
     /**
      * As final tie-breaker
      * select ther branch with more depth

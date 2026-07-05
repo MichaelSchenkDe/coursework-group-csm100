@@ -69,7 +69,7 @@ public final class DijkstraResult{
    * Returns parent nodes (will need this in creating the path)
    * @return Immutable previous nodes map 
    */
-  public Map<Node, Node> getDistanceMap(){
+  public Map<Node, Node> getPrevMap(){
     return prevMap;
   }
 

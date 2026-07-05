@@ -71,5 +71,66 @@ public class Explorer {
    */
   public void escape(EscapeState state) {
     //TODO: Escape from the cavern before time runs out
+    /**
+     * pick up any gold on the startign tile 
+     */
+    if(stage.getCurrentNode().getTile().getGold()>0){
+      state.pickUpGold();
+    }
+    /**
+     * compute the shortest path from every node 
+     * to exit node 
+     */
+    Dijkstra dijsktra=new Dijkstra();
+    DijkstraResult exitResult=dijsktra.computePath(state.getExit());
+
+    /**
+     * distance map used for safety cehck 
+     */
+    Map<Node,Integer>exitDistanceMap=exitResult.getDistanceMap();
+
+    /**
+     * select the best neighboring branch
+     */
+    SelectNextTarget targetSelector=new SelectNextTarget(exitDistanceMap);
+
+    /**
+     * continue until we reach the exit
+     */
+    while(!state.getCurrentNode().equals(state.getExit())){
+      Node currNode=state.getCurrentNode();
+
+      /**
+       * select the best neighboring branch 
+       */
+      Node targetNode=targetSelector.selectBestTarget(
+        currNode,state.getTimeRemaining());
+
+      /**
+       * if no safe branch exit , escape usign the
+       * shortest path
+       */
+      if(target==null){
+        while(!state.getCurrentNode().equals(state.getExit())){
+          Node next=NextStep.nextStep(state.getCurrentNode(),
+                state.getExit(),exitResult);
+          state.moveTo(next);
+          if(stage.getCurrentNode().getTile().getGold()>0){
+            state.pickUpGold();
+          }
+        }
+        return;
+      }
+      /**
+       * move one step to selected neighbor
+       */
+      state.moveTo(targetNode);
+      /**
+       * collect gold if any 
+       */
+      if(stage.getCurrentNode().getTile().getGold()>0){
+        state.pickUpGold();
+      }
+    }
   }
 }

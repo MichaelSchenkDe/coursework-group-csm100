@@ -3,8 +3,8 @@ package student;
 import game.Node;
 
 /**
- * A utility calss responsibel for creating a 
- * shortest path usign previosu node information 
+ * A utility calss responsibel for selecting a 
+ * adjecent  node usign previosu node information 
  * produced by dijkstra result.
  * 
  * ----------------------------
@@ -39,15 +39,15 @@ public final class NextStep{
    * @return
    *        The adjecent node that should be visited next 
    */
-  private Node nextStep(Node current,Node target, DijkstraResult dijkstraResult){
+  public static Node nextStep(Node current,Node target, DijkstraResult dijkstraResult){
     /**
      * If we already standing on the target
-     * no mopve is required 
+     * no move is required 
      */
     if(current.equals(target)){
       return current;
     }
-
+    
     /**
      * Start tracing from the destination node 
      * (traceNode is on target)

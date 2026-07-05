@@ -8,15 +8,15 @@ import java.util.Set;
 import java.util.Map;
 
 /**
- * ---------------
+ * ------------
  * TargetSearch
- * ---------------
+ * ------------
  * 
  * calculate the various specific result such as totalGold 
  * travelCost etc associated with the neighbor of current 
  * node.
  * During the escape phase each neighbor node of current 
- * node is consider as potential target node.
+ * node is consider as potential target node if it has safe exit.
  * Starting from this target a depth-limited(max depth=5) 
  * DFS is performed.
  * 
@@ -32,7 +32,7 @@ import java.util.Map;
  * directly discarded sometime.
  * 
  * This class does not decide which neighbor is best
- * , it simply eveluates a neighbor.
+ * it simply eveluates a neighbor.
  */
 
 public final class TargetSearch{
@@ -63,6 +63,7 @@ public final class TargetSearch{
 
   /**
    * Starts the future bracnh search for one neighbor
+   * because it is already safe.
    * node(assumed target node of current node) of current node.
    * the explorer does not acutally moves to this target neighbor 
    * node , it calculate parameter which will then help in deciding 
@@ -133,53 +134,15 @@ public final class TargetSearch{
     int remainingTime,int travelCost,int totalGold){
 
     /**
-     * calculate the exit distance from the cuirrnt node to exit.
-     * this we already have in precomputed dijkstra. just extract.
-     */
-    Integer exitDistance=exitDistanceMap.get(currNode);
-
-    /**
-     * check whether we can safely exit from curent node
-     * or not 
-     */
-    boolean safe=(exitDistance!=null && remainingTime>=exitDistance);
-
-    /**
-     * If the current node cannot reach the exit safely
-     * stop exploring this branch immediately.
-     */
-    if(!safe){
-      return new TargetSearchResult(totalGold,travelCost,false,
-                      currDepth,targetNode,false);
-    }
-
-
-    /**
+     * this is already safe 
      * collect the gold available at this current node 
-     * if this is safe every recursive call will perform this step
+     * this is safe every recursive call will perform this step
      * this make gold collection to a complete branch
-     * effective.
+     * effective because gold at this point is safe exit 
      */
     totalGold+=currNode.getTile().getGold();
-    
-    /**
-     * Initially assume further dearching this target is
-     * not allowed
-     * later we will get to know if it is safe to evaluate
-     * further deep this branch for neighbors node if any.
-     */
-    boolean canContinueSearch=false;
 
-    /**
-     * calculate if we can continue our search in this branch
-     * any unvisited node within current depth limit 
-     */
-    for(Node neighbor: currNode.getNeighbours()){
-      if(!visited.contains(neighbor)){
-        canContinueSearch=true;
-        break;
-      }
-    }
+    
     /**
      * the current node is a valid stoppage point , so
      * evaluate TargetSearchResult for this node , which will 
@@ -188,11 +151,9 @@ public final class TargetSearch{
      * Now we have every property of current node 
      */
     TargetSearchResult targetResult=new TargetSearchResult
-                (totalGold,travelCost,true,currDepth,
-                targetNode,canContinueSearch);
+      (totalGold,travelCost,currDepth,targetNode,
+      canContinueSearch(currNode,visited,remainingTime));
     
-
-
     /**
      * stop once max depth has reached and return
      */
@@ -210,12 +171,7 @@ public final class TargetSearch{
       if(visited.contains(neighbor)){
         continue;
       }
-      /**
-       * since an unvisited neighbor exist , this branch can 
-       * continue search , so set it true;
-       */
-      canContinueSearch=true;
-
+      
       /**
        * edge connecting the current node to this neighbor 
        */
@@ -232,9 +188,19 @@ public final class TargetSearch{
       int newTravelCost=travelCost+edge.length();
 
       int newRemainingTime=remainingTime-edge.length();
+      
+      /**
+       * can this safely reach exit 
+       */
+      Integer exitDistance=exitDistanceMap.get(neighbor);
+
+      if(exitDistance==null || newRemainingTime<exitDistance){
+        continue;//simply discard the neighbor 
+      }
 
       /**
        * mark this neighbor as visited.
+       * because safe to explore 
        */
       visited.add(neighbor);
 
@@ -242,7 +208,7 @@ public final class TargetSearch{
        * recursive evaluation of this branch 
        * with new values , depth.
        */
-      TargetSearchResult neighborResult=evaluateBranch(neighbor,
+      TargetSearchResult branchResult=evaluateBranch(neighbor,
           targetNode,visited, currDepth+1,newRemainingTime ,
           newTravelCost, totalGold);
 
@@ -256,10 +222,49 @@ public final class TargetSearch{
        * compare this result with the earlier known result , 
        * a bracnh at last will return the best result.
        */
-      if(neighborResult.isBetterThan(targetResult)){
-        targetResult=neighborResult;
+      if(branchResult.isBetterThan(targetResult)){
+        targetResult=branchResult;
       }
     }
     return targetResult;
+  }
+  
+  /**
+   * This will give us whether after 
+   * evaluation of current branch(upto MAX_DEPTH)
+   * whether  there is any possibility in future to browse
+   * safe branches or safe neighbor nodes.
+   * whetehr it is possible to searh 
+   * this bracnh ahead in futuer if we ever reach this end point
+   *  as curent Node
+   */
+  private boolean canContinueSearch(Node currNode ,
+    Set<Node>visited,int remainingTime){
+  
+    for(Node neighbor: currNode.getNeighbours()){
+      /**
+       * ignore already visited nodes
+       */
+      if(visited.contains(neighbor)){
+        continue;
+      }
+      
+      /**
+       * edge connecting the current node to this neighbor 
+       */
+      Edge edge=currNode.getEdge(neighbor);
+
+      int newRemainingTime=remainingTime-edge.length();
+      
+      /**
+       * can this safely reach exit 
+       */
+      Integer exitDistance=exitDistanceMap.get(neighbor);
+
+      if(exitDistance!=null && newRemainingTime >= exitDistance){
+        return true; 
+      }
+    }
+    return false;
   }
 }
