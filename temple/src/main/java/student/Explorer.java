@@ -2,36 +2,24 @@ package student;
 
 import game.EscapeState;
 import game.ExplorationState;
+import game.Node;
+import java.util.Map;
 
+/**
+ * The Explorer navigates the Temple of Gloom in two phases.
+ * Exploration uses a biased depth-first search (ExploreSolver)
+ * that prioritises neighbours closest to the Orb, preserving
+ * a high bonus multiplier.
+ * Escape uses a depth-limited branch evaluation strategy
+ * (SelectNextTarget + TargetSearch) to maximise gold collection
+ * while guaranteeing safe exit.
+ */
 public class Explorer {
 
     /**
-     * Explore the cavern, trying to find the orb in as few steps as possible.
-     * Once you find the orb, you must return from the function in order to pick
-     * it up. If you continue to move after finding the orb rather
-     * than returning, it will not count.
-     * If you return from this function while not standing on top of the orb,
-     * it will count as a failure.
-     * <p>
-     * There is no limit to how many steps you can take, but you will receive
-     * a score bonus multiplier for finding the orb in fewer steps.
-     * <p>
-     * At every step, you only know your current tile's ID and the ID of all
-     * open neighbor tiles, as well as the distance to the orb at each of these tiles
-     * (ignoring walls and obstacles).
-     * <p>
-     * To get information about the current state, use functions
-     * getCurrentLocation(),
-     * getNeighbours(), and
-     * getDistanceToTarget()
-     * in ExplorationState.
-     * You know you are standing on the orb when getDistanceToTarget() is 0.
-     * <p>
-     * Use function moveTo(long id) in ExplorationState to move to a neighboring
-     * tile by its ID. Doing this will change state to reflect your new position.
-     * <p>
-     * A suggested first implementation that will always find the orb, but likely won't
-     * receive a large bonus multiplier, is a depth-first search.
+     * Explore the cavern to find the Orb in as few steps as possible.
+     * Delegates to ExploreSolver which implements a biased DFS,
+     * sorting neighbours by distance to Orb at each step.
      *
      * @param state the information available at the current state
      */
@@ -40,29 +28,50 @@ public class Explorer {
     }
 
     /**
-     * Escape from the cavern before the ceiling collapses, trying to collect as much
-     * gold as possible along the way. Your solution must ALWAYS escape before time runs
-     * out, and this should be prioritized above collecting gold.
-     * <p>
-     * You now have access to the entire underlying graph, which can be accessed through EscapeState.
-     * getCurrentNode() and getExit() will return you Node objects of interest, and getVertices()
-     * will return a collection of all nodes on the graph.
-     * <p>
-     * Note that time is measured entirely in the number of steps taken, and for each step
-     * the time remaining is decremented by the weight of the edge taken. You can use
-     * getTimeRemaining() to get the time still remaining, pickUpGold() to pick up any gold
-     * on your current tile (this will fail if no such gold exists), and moveTo() to move
-     * to a destination node adjacent to your current node.
-     * <p>
-     * You must return from this function while standing at the exit. Failing to do so before time
-     * runs out or returning from the wrong location will be considered a failed run.
-     * <p>
-     * You will always have enough time to escape using the shortest path from the starting
-     * position to the exit, although this will not collect much gold.
+     * Escape from the cavern before the ceiling collapses,
+     * collecting as much gold as possible along the way.
+     * Pre-computes exit distances via Dijkstra, then at each step
+     * evaluates all safe neighbour branches using depth-limited DFS
+     * simulation to select the most gold-efficient move.
+     * Falls back to shortest path to exit if no safe branch exists.
      *
      * @param state the information available at the current state
      */
     public void escape(EscapeState state) {
-        EscapeSolver.solve(state);
+        if (state.getCurrentNode().getTile().getGold() > 0) {
+            state.pickUpGold();
+        }
+
+        Dijkstra dijkstra = new Dijkstra();
+        DijkstraResult exitResult = dijkstra.computePath(state.getExit());
+        Map<Node, Integer> exitDistanceMap = exitResult.getDistanceMap();
+
+        SelectNextTarget targetSelector = new SelectNextTarget(exitDistanceMap);
+
+        while (!state.getCurrentNode().equals(state.getExit())) {
+            Node currNode = state.getCurrentNode();
+            Node targetNode = targetSelector.selectBestTarget(
+                currNode, state.getTimeRemaining()
+            );
+
+            if (targetNode == null) {
+                // No safe gold branch — escape via shortest path
+                while (!state.getCurrentNode().equals(state.getExit())) {
+                    Node next = NextStep.nextStep(
+                        state.getCurrentNode(), state.getExit(), exitResult
+                    );
+                    state.moveTo(next);
+                    if (state.getCurrentNode().getTile().getGold() > 0) {
+                        state.pickUpGold();
+                    }
+                }
+                return;
+            }
+
+            state.moveTo(targetNode);
+            if (state.getCurrentNode().getTile().getGold() > 0) {
+                state.pickUpGold();
+            }
+        }
     }
 }
