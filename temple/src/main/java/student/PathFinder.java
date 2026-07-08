@@ -1,3 +1,13 @@
+/**
+ * NOTE: This class is superseded by Dijkstra.java and DijkstraResult.java
+ * which provide the same shortest-path functionality with cleaner encapsulation
+ * and immutable result objects.
+ *
+ * This file is retained because PathFinderTest depends on it for unit testing
+ * Dijkstra's algorithm correctness on small known graphs.
+ */
+
+
 package student;
 
 import game.Edge;
@@ -124,3 +134,5 @@ public class PathFinder {
 
 
 }
+
+
