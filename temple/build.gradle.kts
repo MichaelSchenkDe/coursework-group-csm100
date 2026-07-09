@@ -22,6 +22,17 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation("com.google.guava:guava:31.1-jre")
+
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
