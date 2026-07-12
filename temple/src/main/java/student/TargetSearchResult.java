@@ -182,12 +182,10 @@ public final class TargetSearchResult{
     double thisRatio=this.getGoldRatio();
     double otherRatio=other.getGoldRatio();
 
-    // NOTE (flagged for review): the ">=" here returns true as soon as the
-    // ratios are equal, so every tiebreaker below (travelCost, totalGold,
-    // canContinueSearch, searchDepth) is unreachable. It was likely meant to be
-    // ">" so that equal ratios fall through to those tiebreakers. Left as-is for
-    // now because changing it alters escape behaviour and needs a re-benchmark.
-    if(Double.compare(thisRatio,otherRatio)>=0){
+    // Higher gold ratio wins outright. Equal ratios fall through to the
+    // tiebreakers below (lower travel cost first, then able to continue, then
+    // greater search depth).
+    if(Double.compare(thisRatio,otherRatio)>0){
       return true;
     }
     if(Double.compare(thisRatio,otherRatio)<0){
