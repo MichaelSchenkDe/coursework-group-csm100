@@ -62,8 +62,8 @@ repository if you want to see the earlier work:
 | Branch | Who | Approach explored |
 |---|---|---|
 | `jordy-implementation` | Jordy | Guided DFS explore, plus a Dijkstra safe-greedy escape (`GoldEscaper`). |
-| `ajay_escape1` | Ajay | First escape attempt: gold-ratio detours. |
-| `ajay_escape2` | Ajay + Marijke | Guided DFS explore plus a Dijkstra escape with a depth-limited gold lookahead. |
+| `ajay_escape1` | Ajay | Two earlier escape heuristics: a smallest-detour approach and a gold-ratio approach. |
+| `ajay_escape2` | Ajay + Marijke | Ajay's optimised final escape (Dijkstra plus a depth-limited branch lookahead) on top of Marijke's guided DFS explore. |
 | `marijke_escape` | Marijke | Dijkstra safe-greedy escape (`EscapeSolver`) and the first shared test graphs. |
 | `origin/michael-exploration` | Michael | Guided DFS explore with a full set of exploration tests. |
 
@@ -73,11 +73,24 @@ assume you can jump to any frontier tile, while the game only lets you move to a
 adjacent tile, so guided DFS with backtracking fit the movement rules best.
 
 For **escape** everyone shared the same safety rule (only detour for gold if you
-can still reach the exit in time), but the branch that scored best was Ajay's
-`ajay_escape2`, which adds a short lookahead to value each branch by gold per
-step. So we took `ajay_escape2` as the base, kept Marijke's guided-DFS explore
-that was already on it, and brought in Michael's exploration tests and our escape
-tests. That combined branch is `escape_tests`.
+can still reach the exit in time), and Ajay worked through three approaches to
+decide which gold to go for:
+
+1. **Detour** (`ajay_escape1`): head for the safe gold tile that adds the fewest
+   extra steps compared with going straight to the exit, that is the smallest
+   `(steps to the gold + steps from the gold to the exit) - (steps straight to
+   the exit)`.
+2. **Gold ratio** (`ajay_escape1`): instead of the smallest detour, head for the
+   safe gold tile with the best gold per step, `gold / (steps to the gold + steps
+   from the gold to the exit)`.
+3. **Optimised branch lookahead** (`ajay_escape2`): rather than scoring a single
+   gold tile, run a short depth-limited search down each neighbour branch and
+   value the whole branch by gold per step. This picks up clusters of gold along
+   a direction, not just one tile, and it is the version we kept.
+
+The optimised approach scored best, so we took `ajay_escape2` as the base, kept
+Marijke's guided-DFS explore that was already on it, and brought in Michael's
+exploration tests and our escape tests. That combined branch is `escape_tests`.
 
 ## The algorithms
 
