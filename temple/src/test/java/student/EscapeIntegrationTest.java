@@ -76,4 +76,18 @@ class EscapeIntegrationTest {
     assertEquals(0, g.get("GoldDeep").getTile().getGold(), "the deep 500-gold tile should be collected");
     assertEquals(g.get("Exit"), state.getCurrentNode(), "and the explorer must still finish on the exit");
   }
+
+  /**
+   * When there is no gold anywhere, escaping is still the only job. On the
+   * all-empty graph the explorer must simply make its way to the exit and stop.
+   */
+  @Test
+  void escapeReachesExitWhenThereIsNoGold() {
+    Map<String, Node> g = GraphHelper.noGoldGraph();
+    MockEscapeState state = new MockEscapeState(g.get("A"), g.get("C"), g.values(), 100);
+
+    new Explorer().escape(state);
+
+    assertEquals(g.get("C"), state.getCurrentNode(), "with no gold to collect, still finish on the exit");
+  }
 }
