@@ -32,4 +32,19 @@ class SelectNextTargetTest {
 
     assertEquals(g.get("B"), target, "should head for the richer, cheaper branch B, not C");
   }
+
+  /**
+   * Escape safety is absolute: a gold tile must never be chosen if reaching it
+   * would leave too little time to still get out. With only 3 steps of budget,
+   * the 1000-gold detour (cost 10 there, 10 back to the exit) is unaffordable,
+   * so the selector must fall back to the safe direct step to the exit.
+   */
+  @Test
+  void rejectsGoldDetourThatWouldStrandTheExplorer() {
+    Map<String, Node> g = GraphHelper.timeConstrainedGraph();
+
+    Node target = selectorFor(g.get("Exit")).selectBestTarget(g.get("Start"), 3);
+
+    assertEquals(g.get("Exit"), target, "must reject the unsafe rich detour and step to the exit");
+  }
 }
