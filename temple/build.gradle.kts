@@ -10,8 +10,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
-    id("io.freefair.lombok") version "8.0.1"
-    id("net.ltgt.errorprone") version "latest.release"
+    id("io.freefair.lombok") version "8.11"
 }
 
 
@@ -23,13 +22,23 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation("com.google.guava:guava:31.1-jre")
-    errorprone("com.google.errorprone:error_prone_core:latest.release")
+
+    // Unit testing with JUnit 5 (Jupiter).
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(20))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
