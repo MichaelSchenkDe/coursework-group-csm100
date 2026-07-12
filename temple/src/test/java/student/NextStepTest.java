@@ -32,4 +32,18 @@ class NextStepTest {
 
     assertEquals(g.get("B"), step, "first hop from A toward D must be the adjacent tile B");
   }
+
+  /**
+   * Asking for the next step when already standing on the target returns that
+   * same tile, so the escape loop makes no needless move once it has arrived.
+   */
+  @Test
+  void returnsSelfWhenAlreadyAtTarget() {
+    Map<String, Node> g = GraphHelper.linearGraph();
+    DijkstraResult fromCurrent = new Dijkstra().computePath(g.get("D"));
+
+    Node step = NextStep.nextStep(g.get("D"), g.get("D"), fromCurrent);
+
+    assertEquals(g.get("D"), step, "next step from the target to itself is itself");
+  }
 }
