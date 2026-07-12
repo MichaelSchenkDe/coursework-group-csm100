@@ -43,4 +43,20 @@ class EscapeIntegrationTest {
     assertEquals(0, g.get("B").getTile().getGold(), "gold on B should have been picked up");
     assertEquals(0, g.get("C").getTile().getGold(), "gold on C should have been picked up");
   }
+
+  /**
+   * The trivial case: the explorer already stands on the exit. escape() must
+   * return immediately, on the exit, without taking a single step.
+   */
+  @Test
+  void escapeReturnsImmediatelyWhenAlreadyAtExit() {
+    Map<String, Node> g = GraphHelper.singleNodeGraph();
+    Node only = g.get("Only");
+    MockEscapeState state = new MockEscapeState(only, only, g.values(), 100);
+
+    new Explorer().escape(state);
+
+    assertEquals(only, state.getCurrentNode(), "should stay on the exit");
+    assertEquals(1, state.visited().size(), "should take no steps when already at the exit");
+  }
 }
