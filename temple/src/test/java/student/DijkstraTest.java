@@ -42,4 +42,23 @@ class DijkstraTest {
     assertEquals(1, fromA.getDistance(g.get("B")), "B is one weight-1 hop from A");
     assertNull(fromA.getDistance(g.get("Island")), "the disconnected island has no distance");
   }
+
+  /**
+   * The parent map must let the caller walk the shortest path back from any tile
+   * to the source. On the linear graph A-B-C-D the chain from D is D->C->B->A,
+   * and the source itself has no parent. NextStep relies on this to take the
+   * first step toward a target.
+   */
+  @Test
+  void reconstructsParentChainToSource() {
+    Map<String, Node> g = GraphHelper.linearGraph();
+
+    DijkstraResult fromA = new Dijkstra().computePath(g.get("A"));
+
+    assertEquals(3, fromA.getDistance(g.get("D")), "A to D is three weight-1 hops");
+    assertEquals(g.get("C"), fromA.getPrev(g.get("D")), "D's parent is C");
+    assertEquals(g.get("B"), fromA.getPrev(g.get("C")), "C's parent is B");
+    assertEquals(g.get("A"), fromA.getPrev(g.get("B")), "B's parent is A");
+    assertNull(fromA.getPrev(g.get("A")), "the source has no parent");
+  }
 }
