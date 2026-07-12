@@ -59,4 +59,21 @@ class EscapeIntegrationTest {
     assertEquals(only, state.getCurrentNode(), "should stay on the exit");
     assertEquals(1, state.visited().size(), "should take no steps when already at the exit");
   }
+
+  /**
+   * Gold that is not an immediate neighbour must still be found and collected.
+   * On the deep-gold graph the 500-gold tile sits three tiles in
+   * (Start-Mid1-Mid2-GoldDeep-Exit); with ample time the depth-limited lookahead
+   * should route through it, so it is banked and the explorer still exits.
+   */
+  @Test
+  void escapeCollectsGoldBuriedDeepInTheGraph() {
+    Map<String, Node> g = GraphHelper.deepGoldGraph();
+    MockEscapeState state = new MockEscapeState(g.get("Start"), g.get("Exit"), g.values(), 100);
+
+    new Explorer().escape(state);
+
+    assertEquals(0, g.get("GoldDeep").getTile().getGold(), "the deep 500-gold tile should be collected");
+    assertEquals(g.get("Exit"), state.getCurrentNode(), "and the explorer must still finish on the exit");
+  }
 }
