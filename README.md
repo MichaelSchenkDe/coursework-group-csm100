@@ -17,7 +17,7 @@ exploration bonus, so both phases matter.
 
 ## Verify it works
 
-Run these from the repository root (`coursework-group-csm100`). You need Java 21
+Run these from the repository root (`coursework-group-csm100`). You need Java 20
 and Gradle installed.
 
 Run all tests:
@@ -262,6 +262,6 @@ gradle :temple:run -PchooseMain=main.TXTmain --args="-n 100"
 
 ## Build
 
-The project uses Gradle with a Java 21 toolchain. `gradle :temple:test` and
+The project uses Gradle with a Java 20 toolchain. `gradle :temple:test` and
 `gradle :temple:run` compile everything for you, so there is nothing else to set
 up.
