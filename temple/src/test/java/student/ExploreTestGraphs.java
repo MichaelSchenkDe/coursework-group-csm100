@@ -1,4 +1,4 @@
-package student.explore.support;
+package student;
 
 import java.util.List;
 import java.util.Map;

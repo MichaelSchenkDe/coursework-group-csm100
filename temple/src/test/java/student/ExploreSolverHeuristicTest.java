@@ -1,9 +1,6 @@
-package student.explore;
+package student;
 
 import org.junit.jupiter.api.Test;
-import student.ExploreSolver;
-import student.explore.support.ExploreTestGraphs;
-import student.explore.support.MockExplorationState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

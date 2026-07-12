@@ -1,4 +1,4 @@
-package student.explore.support;
+package student;
 
 import game.ExplorationState;
 import game.NodeStatus;

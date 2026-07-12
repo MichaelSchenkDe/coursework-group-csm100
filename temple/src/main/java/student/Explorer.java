@@ -43,33 +43,9 @@ public class Explorer {
    * @param state the information available at the current state
    */
   public void explore(ExplorationState state) {
-    //TODO : Explore the cavern and find the orb
-    // Set<Long>visited=new HashSet<>();
-    // dfs(state,state.getCurrentLocation(),visited);
     ExploreSolver.solve(state);
   }
 
-  // private boolean  dfs(ExplorationState state, long curr, Set<Long>visited){
-  //   visited.add(curr);
-  //   if(state.getDistanceToTarget()==0){
-  //     return true ;
-  //   }
-
-  //   for(NodeStatus neighbor : state.getNeighbours()){
-  //     long next=neighbor.nodeID();
-
-  //     if (!visited.contains(next)){
-        
-  //       state.moveTo(next);
-  //       if(dfs(state,next,visited)){
-  //         return true;
-  //       }
-  //       state.moveTo(curr);
-  //     }
-  //   }
-  //   return false;
-  // }
-  
   /**
    * Escape from the cavern before the ceiling collapses, trying to collect as much
    * gold as possible along the way. Your solution must ALWAYS escape before time runs
@@ -94,9 +70,8 @@ public class Explorer {
    * @param state the information available at the current state
    */
   public void escape(EscapeState state) {
-    //TODO: Escape from the cavern before time runs out
     /*
-     * pick up any gold on the starting tile 
+     * pick up any gold on the starting tile
      */
     if(state.getCurrentNode().getTile().getGold()>0){
       state.pickUpGold();
