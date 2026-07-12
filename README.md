@@ -15,6 +15,36 @@ exploration bonus, so both phases matter.
 - Trello board: https://trello.com/invite/b/6a30f5910fdb37f934d44899/ATTIbf1db34d20b211867dcd49d584a0f7734262067E/sdp-2026
 - SCRUM meeting recordings: https://drive.google.com/drive/folders/1iRBGD-tmfkCqoGuVN1YM2RyL9LH-Eq3c?usp=drive_link
 
+## Verify it works
+
+Run these from the repository root (`coursework-group-csm100`). You need Java 21
+and Gradle installed.
+
+Run all 19 tests:
+
+```
+gradle :temple:test
+```
+
+If Gradle says the task is up to date and you want to force the tests to run
+again, use:
+
+```
+gradle :temple:test --rerun-tasks
+```
+
+Run the solution on 100 random maps and print an average score:
+
+```
+gradle :temple:run -PchooseMain=main.TXTmain --args="-n 100"
+```
+
+Run a single map with the GUI so you can watch it:
+
+```
+gradle :temple:run -PchooseMain=main.GUImain --args="-s 42"
+```
+
 ## What we built
 
 We only write two methods, both in `student/Explorer.java`: `explore()` and
@@ -89,21 +119,13 @@ What we cover:
 - One test runs the real game over 30 seeded maps and checks the escape never
   fails, since that is the requirement we cannot get wrong.
 
-Run the tests with:
-
-```
-gradle :temple:test
-```
+The commands to run the tests are in the "Verify it works" section above.
 
 ## Running the game
 
 There are two entry points in the `main` package. `TXTmain` runs headless and
-`GUImain` runs with the display.
-
-```
-gradle :temple:run -PchooseMain=main.TXTmain --args="-n 100"
-gradle :temple:run -PchooseMain=main.GUImain --args="-s 42"
-```
+`GUImain` runs with the display. The commands are in the "Verify it works"
+section above. Two flags control how they run:
 
 - `-n <count>` runs that many maps and prints an average (headless only).
 - `-s <seed>` runs a specific map, which is handy for retrying a tricky one.
