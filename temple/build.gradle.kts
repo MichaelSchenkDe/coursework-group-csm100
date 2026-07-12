@@ -26,6 +26,14 @@ dependencies {
     implementation("com.google.guava:guava:31.1-jre")
     //errorprone("com.google.errorprone:error_prone_core:latest.release")
     errorprone("com.google.errorprone:error_prone_core:2.23.0")
+
+    // Unit testing with JUnit 5 (Jupiter).
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

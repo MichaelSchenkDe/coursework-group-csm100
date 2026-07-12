@@ -3,3 +3,7 @@
 
 # Ignore Gradle build output directory
 build
+
+# Local run/test helper scripts (not deliverables)
+run.sh
+test.sh
