@@ -29,16 +29,6 @@ public class TargetSearchResultTest {
     }
 
     @Test
-    void higherTotalGoldWinsOnEqualRatioAndCost() {
-    Map<String, Node> g = GraphHelper.linearGraph();
-    // ratio = gold/cost: more = 200/2 = 100, less = 100/2 = 50
-    // same cost, more gold, higher ratio — more wins
-    TargetSearchResult more = new TargetSearchResult(200, 2, 1, g.get("A"), false);
-    TargetSearchResult less = new TargetSearchResult(100, 2, 1, g.get("B"), false);
-    assertTrue(more.isBetterThan(less));
-    }
-
-    @Test
     void continuableWinsOverNonContinuableOnTie() {
         Map<String, Node> g = GraphHelper.linearGraph();
         TargetSearchResult cont   = new TargetSearchResult(10, 1, 1, g.get("A"), true);

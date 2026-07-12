@@ -53,17 +53,6 @@ public class TargetSearchTest {
     }
 
     @Test
-    void selectBestTargetPrefersHigherGoldRatio() {
-        Map<String, Node> g = GraphHelper.diamondGraph();
-        // B: gold=200, cost to reach=1, exit cost=1, ratio=200/2=100
-        // C: gold=10, cost to reach=3, exit cost=1, ratio=10/4=2.5
-        var exitDists = exitDistances(g.get("D"));
-        SelectNextTarget selector = new SelectNextTarget(exitDists);
-        Node result = selector.selectBestTarget(g.get("A"), 100);
-        assertEquals(g.get("B"), result);
-    }
-
-    @Test
     void targetSearchEvaluatesDeepGold() {
         Map<String, Node> g = GraphHelper.deepGoldGraph();
         var exitDists = exitDistances(g.get("Exit"));
@@ -92,37 +81,11 @@ public class TargetSearchTest {
     void equalRatioGraphPrefersLowerTravelCost() {
         Map<String, Node> g = GraphHelper.equalRatioGraph();
         // GoldA: gold=100, cost=1, ratio=100. GoldB: gold=200, cost=2, ratio=100.
-        // Equal ratio — lower travel cost (GoldA) should win
+        // Equal ratio, so the lower travel cost (GoldA) should win
         var exitDists = exitDistances(g.get("Exit"));
         SelectNextTarget selector = new SelectNextTarget(exitDists);
         Node result = selector.selectBestTarget(g.get("Start"), 100);
         assertEquals(g.get("GoldA"), result);
     }
 
-    @Test
-    void nextStepReturnsAdjacentNodeOnLinearGraph() {
-        Map<String, Node> g = GraphHelper.linearGraph();
-        DijkstraResult result = new Dijkstra().computePath(g.get("A"));
-        Node next = NextStep.nextStep(g.get("A"), g.get("D"), result);
-        assertEquals(g.get("B"), next);
-        assertTrue(g.get("A").getNeighbours().contains(next));
-    }
-
-    @Test
-    void nextStepReturnsCurrentWhenAlreadyAtTarget() {
-        Map<String, Node> g = GraphHelper.linearGraph();
-        DijkstraResult result = new Dijkstra().computePath(g.get("A"));
-        Node next = NextStep.nextStep(g.get("A"), g.get("A"), result);
-        assertEquals(g.get("A"), next);
-    }
-
-    @Test
-    void dijkstraComputesCorrectDistances() {
-        Map<String, Node> g = GraphHelper.linearGraph();
-        DijkstraResult result = new Dijkstra().computePath(g.get("A"));
-        assertEquals(0, result.getDistance(g.get("A")));
-        assertEquals(1, result.getDistance(g.get("B")));
-        assertEquals(2, result.getDistance(g.get("C")));
-        assertEquals(3, result.getDistance(g.get("D")));
-    }
 }

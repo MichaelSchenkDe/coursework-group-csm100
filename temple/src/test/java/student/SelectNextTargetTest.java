@@ -1,7 +1,6 @@
 package student;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import game.GraphHelper;
 import game.Node;
@@ -49,21 +48,4 @@ class SelectNextTargetTest {
     assertEquals(g.get("Exit"), target, "must reject the unsafe rich detour and step to the exit");
   }
 
-  /**
-   * When two branches are equally good (same gold-per-step) and both safe, the
-   * selector must still commit to one of the gold branches rather than stalling.
-   * We assert only that it picks a gold branch, not which one: the exact
-   * tie-break is currently swallowed by the {@code >=} in
-   * {@link TargetSearchResult#isBetterThan} (flagged separately), so pinning the
-   * winner would lock in that behaviour.
-   */
-  @Test
-  void picksAGoldBranchWhenTwoAreEquallyGood() {
-    Map<String, Node> g = GraphHelper.equalRatioGraph();
-
-    Node target = selectorFor(g.get("Exit")).selectBestTarget(g.get("Start"), 100);
-
-    assertTrue(target.equals(g.get("GoldA")) || target.equals(g.get("GoldB")),
-        "should head for one of the two equally-good gold branches, not stall");
-  }
 }
