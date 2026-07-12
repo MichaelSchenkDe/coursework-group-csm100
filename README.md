@@ -20,7 +20,7 @@ exploration bonus, so both phases matter.
 Run these from the repository root (`coursework-group-csm100`). You need Java 21
 and Gradle installed.
 
-Run all 19 tests:
+Run all tests:
 
 ```
 gradle :temple:test
@@ -53,36 +53,69 @@ touch it. To keep things readable we split the real work out of `Explorer` into
 small classes in the `student` package, so each piece does one job and can be
 tested on its own.
 
-### Exploration
+## How we arrived at this implementation
+
+Each of us prototyped an approach on our own branch first, then we compared them
+and merged the strongest pieces into one solution. The branches are still on the
+repository if you want to see the earlier work:
+
+| Branch | Who | Approach explored |
+|---|---|---|
+| `jordy-implementation` | Jordy | Guided DFS explore, plus a Dijkstra safe-greedy escape (`GoldEscaper`). |
+| `ajay_escape1` | Ajay | First escape attempt: gold-ratio detours. |
+| `ajay_escape2` | Ajay + Marijke | Guided DFS explore plus a Dijkstra escape with a depth-limited gold lookahead. |
+| `marijke_escape` | Marijke | Dijkstra safe-greedy escape (`EscapeSolver`) and the first shared test graphs. |
+| `origin/michael-exploration` | Michael | Guided DFS explore with a full set of exploration tests. |
+
+For **exploration** we all converged on the same idea, a depth-first search
+guided by the distance-to-Orb hint. We looked at BFS and A\* too, but those
+assume you can jump to any frontier tile, while the game only lets you move to an
+adjacent tile, so guided DFS with backtracking fit the movement rules best.
+
+For **escape** everyone shared the same safety rule (only detour for gold if you
+can still reach the exit in time), but the branch that scored best was Ajay's
+`ajay_escape2`, which adds a short lookahead to value each branch by gold per
+step. So we took `ajay_escape2` as the base, kept Marijke's guided-DFS explore
+that was already on it, and brought in Michael's exploration tests and our escape
+tests. That combined branch is `escape_tests`.
+
+## The algorithms
+
+### Exploration (`ExploreSolver`)
 
 `explore()` has to reach the Orb in as few steps as possible for a good bonus.
 We know the grid distance to the Orb from our current tile and each neighbour,
 but not the walls, so it is a guided search rather than a blind one.
 
-`ExploreSolver` runs a depth first search that always tries the neighbour with
-the smallest distance to the Orb first. This heads roughly toward the target
-while still backtracking out of dead ends, so the Orb is always found and the
-step count stays low.
+1. Mark the current tile as visited.
+2. If `getDistanceToTarget() == 0` we are on the Orb, so stop.
+3. Sort the neighbours by their distance to the Orb, closest first.
+4. For each unvisited neighbour: move there, recurse, and if the Orb was found
+   return. Otherwise step back and try the next neighbour.
 
-### Escape
+This is depth-first search with a heuristic: always try the direction that looks
+closest to the Orb first, while still backtracking out of dead ends.
+
+### Escape (`Dijkstra`, `SelectNextTarget`, `TargetSearch`, `NextStep`)
 
 After picking up the Orb the map is revealed, the walls shift, gold appears, and
 every edge now has a weight (a step cost). `escape()` has to reach the exit
 before time runs out. Reaching the exit is the priority, because failing scores
 zero, and collecting gold is the bonus on top.
 
-The escape is built from a few small classes:
+1. Pick up any gold on the starting tile.
+2. Run `Dijkstra` from the exit once, giving the cheapest cost from every tile to
+   the exit. This is what the safety check uses.
+3. Loop until we are on the exit. `SelectNextTarget` looks at each neighbour, and
+   for the safe ones runs `TargetSearch`, a short depth-limited lookahead that
+   estimates how much gold that branch is worth per step. It heads for the best
+   branch and takes one step with `NextStep`, collecting any gold on the way.
+4. When no safe gold branch is left, walk the shortest path straight to the exit.
 
-- `Dijkstra`, `DijkstraResult` and `NodeDistance` compute the cheapest cost from
-  one tile to every other tile, and the path to get there.
-- `SelectNextTarget` and `TargetSearch` look a few steps ahead and choose the
-  safe branch with the best gold per step.
-- `NextStep` turns a chosen target into the single next move, since we can only
-  step to an adjacent tile.
-
-The rule that keeps it safe is simple. We only detour for gold if, after
-reaching that gold, the shortest path from there to the exit still fits in the
-time left. That way we can always still get out.
+The rule that keeps it safe: we only move toward a tile if, after reaching it,
+the shortest path from there to the exit still fits in the time left. Since the
+brief guarantees enough time for the shortest path at the start, this holds the
+whole way, so the escape can never run out of time.
 
 ## Code structure (student package)
 
@@ -91,44 +124,128 @@ time left. That way we can always still get out.
 | `Explorer` | Entry point. Delegates `explore()` and `escape()`. |
 | `ExploreSolver` | Guided depth first search for the exploration phase. |
 | `Dijkstra`, `DijkstraResult`, `NodeDistance` | Shortest paths on the weighted escape graph. |
-| `SelectNextTarget`, `TargetSearch`, `TargetSearchResult` | Pick the best safe gold branch to head for. |
+| `SelectNextTarget`, `TargetSearch`, `TargetSearchResult` | Value each safe branch and pick the best gold per step. |
 | `NextStep` | The single adjacent move toward a chosen target. |
+
+## Project layout
+
+```
+temple/
+  build.gradle.kts
+  src/main/java/
+    game/            provided: the graph, tiles, game state (do not edit)
+    gui/             provided: the Swing display
+    main/            provided: TXTmain (headless) and GUImain
+    student/         our code
+      Explorer.java
+      ExploreSolver.java
+      Dijkstra.java  DijkstraResult.java  NodeDistance.java
+      NextStep.java
+      SelectNextTarget.java  TargetSearch.java  TargetSearchResult.java
+  src/test/java/
+    game/
+      GraphHelper.java          shared escape graphs (needs the game package)
+    student/
+      DijkstraTest.java              \
+      NextStepTest.java               |
+      SelectNextTargetTest.java       | escape tests
+      EscapeIntegrationTest.java      |
+      AlwaysEscapesTest.java          |
+      MockEscapeState.java           /
+      ExploreSolverCorrectnessTest.java   \
+      ExploreSolverHeuristicTest.java      |
+      ExploreSolverGraphTest.java          |
+      ExploreSolverEfficiencyTest.java     | explore tests
+      ExploreSolverCycleTest.java          |
+      ExplorerWiringTest.java              |
+      ExploreGameSmokeTest.java            |
+      MockExplorationState.java            |
+      ExploreTestGraphs.java              /
+```
 
 ## Testing
 
-The tests live under `temple/src/test/java` and run with JUnit 5. There are 19
-in total, 5 for the exploration phase and 14 for the escape phase.
+All tests run with JUnit 5 through `gradle :temple:test`. There are 29 in total,
+15 for exploration and 14 for escape.
+
+### Levels of testing
+
+We test at a few levels, from fast and narrow to slow and realistic:
+
+| Level | What it checks | How |
+|---|---|---|
+| Unit | The algorithm on small hand-made graphs | JUnit with `MockExplorationState` / `MockEscapeState` |
+| Wiring | `Explorer.explore()` calls `ExploreSolver` | JUnit (`ExplorerWiringTest`) |
+| Smoke | The real game engine runs without crashing | JUnit calling `GameState.runNewGame` |
+| Manual GUI | Watch the explorer move and backtrack | Run `GUImain` and look |
+| Benchmark | Score and bonus on real seeds | Run `TXTmain` with `-n` |
 
 We build small graphs by hand and reuse them across tests instead of rebuilding
-one in every test. The escape tests share a set of named maps in
-`game/GraphHelper` (a straight line, a diamond, a time limited map, and so on),
-and drive them through `MockEscapeState`, which fakes the game so we can set the
-start tile, gold, exit and time and then check what the code does. The
-exploration tests use `MockExplorationState` and the maps in `ExploreTestGraphs`
-the same way.
+one each time. The escape tests share named maps in `game/GraphHelper` and drive
+them through `MockEscapeState`; the exploration tests use `ExploreTestGraphs` and
+`MockExplorationState` the same way.
 
-What we cover:
+### Exploration unit tests
 
-- Exploration: the Orb is found on a straight path, on a branching map, and when
-  we already start on it, and the guided search prefers closer tiles while still
-  backing out of a misleading dead end.
-- Escape: shortest paths pick the cheapest route by weight, unreachable tiles are
-  handled, a safe gold branch is chosen, an unsafe detour is refused, gold is
-  collected along the way including gold buried deep in the map, and the explorer
-  always finishes on the exit.
-- One test runs the real game over 30 seeded maps and checks the escape never
-  fails, since that is the requirement we cannot get wrong.
+| Test class | What it checks |
+|---|---|
+| `ExploreSolverCorrectnessTest` | The Orb is found on a straight path, a branching map, and when already on it. |
+| `ExploreSolverHeuristicTest` | Closer neighbours are tried first, and a misleading dead end is explored then backtracked. |
+| `ExploreSolverGraphTest` | The Orb is found on a zig-zag map, and no moves are made when it starts on the Orb. |
+| `ExploreSolverEfficiencyTest` | The move count is minimal on maps without misleading branches. |
+| `ExploreSolverCycleTest` | Visited tracking stops infinite loops on a map with a cycle. |
+| `ExplorerWiringTest` | `Explorer.explore()` delegates to `ExploreSolver`. |
+| `ExploreGameSmokeTest` | The real game runs to completion, no crash, on seeds 1, 42 and 123. |
 
-The commands to run the tests are in the "Verify it works" section above.
+### Escape unit tests
 
-## Running the game
+| Test class | What it checks |
+|---|---|
+| `DijkstraTest` | Cheapest route is by total weight not hops, unreachable tiles are handled, and the path back to the source is rebuilt. |
+| `NextStepTest` | The next move is the correct adjacent tile, and it stays put when already on the target. |
+| `SelectNextTargetTest` | The richer safe branch is chosen, an unsafe detour is refused, and a gold branch is still taken on a tie. |
+| `EscapeIntegrationTest` | The full escape finishes on the exit and collects gold, including gold buried deep and the no-gold case. |
+| `AlwaysEscapesTest` | The real game is run over 30 seeded maps and the escape never fails, the one thing we cannot get wrong. |
 
-There are two entry points in the `main` package. `TXTmain` runs headless and
-`GUImain` runs with the display. The commands are in the "Verify it works"
-section above. Two flags control how they run:
+### Running specific tests
 
-- `-n <count>` runs that many maps and prints an average (headless only).
-- `-s <seed>` runs a specific map, which is handy for retrying a tricky one.
+Run one test class:
+
+```
+gradle :temple:test --tests "student.ExploreSolverCorrectnessTest"
+```
+
+Run one test method:
+
+```
+gradle :temple:test --tests "student.DijkstraTest.choosesCheaperRouteByWeight"
+```
+
+### Benchmark
+
+Score is gold collected times the exploration bonus. These are from our runs on
+this implementation:
+
+| Seed | Purpose | Gold | Bonus | Score |
+|---|---|---|---|---|
+| `42` | Team comparison | 21,243 | 1.2 | 25,491 |
+| `-4152836868077314850` | League high-score map | 53,625 | 1.08 | 57,674 |
+| 100 random maps (`-n 100`) | Average | | | about 20,000 to 21,000 |
+
+Reproduce them with:
+
+```
+gradle :temple:run -PchooseMain=main.TXTmain --args="-s 42"
+gradle :temple:run -PchooseMain=main.TXTmain --args="-s -4152836868077314850"
+gradle :temple:run -PchooseMain=main.TXTmain --args="-n 100"
+```
+
+### Troubleshooting
+
+| Problem | Cause | Fix |
+|---|---|---|
+| `main.TXTmain` not found, or the args look split | The shell split `-PchooseMain=...` or `--args=...` | Quote them, for example `--args="-s 42"`. On PowerShell quote `"-PchooseMain=main.TXTmain"` too. |
+| Gradle cannot find a Java 21 toolchain | JDK 21 is not installed | Install a Java 21 JDK, the build is pinned to it. |
 
 ## Build
 
