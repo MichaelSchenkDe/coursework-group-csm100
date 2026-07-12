@@ -96,7 +96,7 @@ public class Explorer {
   public void escape(EscapeState state) {
     //TODO: Escape from the cavern before time runs out
     /*
-     * pick up any gold on the startign tile 
+     * pick up any gold on the starting tile 
      */
     if(state.getCurrentNode().getTile().getGold()>0){
       state.pickUpGold();
@@ -109,7 +109,7 @@ public class Explorer {
     DijkstraResult exitResult=dijkstra.computePath(state.getExit());
 
     /*
-     * distance map used for safety cehck 
+     * distance map used for safety check 
      */
     Map<Node,Integer>exitDistanceMap=exitResult.getDistanceMap();
 
@@ -131,7 +131,7 @@ public class Explorer {
         currNode,state.getTimeRemaining());
 
       /*
-       * if no safe branch exit , escape usign the
+       * if no safe branch exit , escape using the
        * shortest path
        */
       if(targetNode==null){

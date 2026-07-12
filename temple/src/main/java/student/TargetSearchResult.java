@@ -17,7 +17,7 @@ import game.Node;
  * limited depth future safe exit search to estimate:
  * How much gold can be collected from this branch.
  * How much travel time is required.
- * Can we still reach to the exit safely form here.
+ * Can we still reach to the exit safely from here.
  * Where is should go next (next target node based on results.)
  * 
  * We will group this information in a single object
@@ -38,14 +38,14 @@ public final class TargetSearchResult{
 
   /**
    * Total travel cost required to collect the gold
-   * travel cost is measured usign edge weight.
+   * travel cost is measured using edge weight.
    */
   private final int travelCost;
 
   /**
    * original neighbor node for next move,
    * (assuming each neighbor as target, we will decide
-   * where to move based on results of each naighbor)
+   * where to move based on results of each neighbor)
    * after careful consideration of all above
    * results.
    */
@@ -74,7 +74,7 @@ public final class TargetSearchResult{
    * A immutable TargetSearchResult
    * 
    * @param totalGold
-   *        Total safe collectable gold form a branch 
+   *        Total safe collectable gold from a branch 
    * @param travelCost
    *        Time required to collect the gold 
    * @param targetNode 
@@ -171,7 +171,7 @@ public final class TargetSearchResult{
    * @param  
    * other TargetSearchResult to compare against 
    * @return
-   * true if (this) result is betterthan (other) result
+   * true if (this) result is better than (other) result
    */
 
   public boolean isBetterThan(TargetSearchResult other){

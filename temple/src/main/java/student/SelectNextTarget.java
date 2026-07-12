@@ -10,7 +10,7 @@ import java.util.Map;
  * SelectNextTarget
  * -----------------
  * 
- * This select the best target node form current node's 
+ * This select the best target node from current node's 
  * neighbor to move durting the escape phase.
  * decision is based on various fields of TargetSearchResult.
  * 
@@ -22,7 +22,7 @@ import java.util.Map;
 public final class SelectNextTarget{
 
   /**
-   * Shortest distance form every node to exit.
+   * Shortest distance from every node to exit.
    */
   private final Map<Node,Integer>exitDistanceMap;
 
@@ -34,7 +34,7 @@ public final class SelectNextTarget{
   /**
    * A SelectNextTarget
    * @param exitDistanceMap
-   *        shortest distance form each node to exit 
+   *        shortest distance from each node to exit 
    */
   public SelectNextTarget(Map<Node,Integer>exitDistanceMap){
     this.exitDistanceMap=exitDistanceMap;
@@ -46,7 +46,7 @@ public final class SelectNextTarget{
    * @param currNode
    *        explorer's current node 
    * @param remainingTime
-   *        remaining escape time form this node 
+   *        remaining escape time from this node 
    * @return 
    *        best neighbor node or null if no safe neighbor
    */

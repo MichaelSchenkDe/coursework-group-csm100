@@ -32,7 +32,7 @@ import java.util.Map;
  * directly discarded sometime.
  * 
  * This class does not decide which neighbor is best
- * it simply eveluates a neighbor.
+ * it simply evaluates a neighbor.
  */
 
 public final class TargetSearch{
@@ -62,10 +62,10 @@ public final class TargetSearch{
   }
 
   /**
-   * Starts the future bracnh search for one neighbor
+   * Starts the future branch search for one neighbor
    * because it is already safe.
    * node(assumed target node of current node) of current node.
-   * the explorer does not acutally moves to this target neighbor 
+   * the explorer does not actually moves to this target neighbor 
    * node , it calculate parameter which will then help in deciding 
    * whether it is a good decision to move to this node.
    * 
@@ -223,7 +223,7 @@ public final class TargetSearch{
 
       /*
        * compare this result with the earlier known result , 
-       * a bracnh at last will return the best result.
+       * a branch at last will return the best result.
        */
       if(branchResult.isBetterThan(targetResult)){
         targetResult=branchResult;
@@ -238,7 +238,7 @@ public final class TargetSearch{
    * whether  there is any possibility in future to browse
    * safe branches or safe neighbor nodes.
    * whetehr it is possible to searh 
-   * this bracnh ahead in futuer if we ever reach this end point
+   * this branch ahead in futuer if we ever reach this end point
    *  as curent Node
    */
   private boolean canContinueSearch(Node currNode ,

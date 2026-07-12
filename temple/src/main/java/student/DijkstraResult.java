@@ -16,14 +16,14 @@ import java.util.Map;
  * -----------------------
  * 
  * Dijkstra compute the shortest path from a source node to 
- * every rechable node.
+ * every reachable node.
  * Knowing this distance is not enough,We need parent of each 
  * node to actually construct a path to reach the node.
  * 
  * Therefore we need to remember the parent of each node in 
  * the shortest path tree 
  * 
- * ## This calss help us in returning one object(complete information
+ * ## This class help us in returning one object(complete information
  * in one onject form)
  * 
  * To prevent accidental modifications this class is immutable 
@@ -31,7 +31,7 @@ import java.util.Map;
 public final class DijkstraResult{
 
   /**
-   * Shortest distance form source node to every rechable node 
+   * Shortest distance from source node to every reachable node 
    * Key:
    *     destination node
    * Value:
@@ -48,7 +48,7 @@ public final class DijkstraResult{
    * A new immutable Dijkstra result
    * 
    * @param distanceMap 
-   *        Shortest distance form source node to every rechable node
+   *        Shortest distance from source node to every reachable node
    * @param prevMap 
    *        parent nodes (will need this in creating the path)
    */

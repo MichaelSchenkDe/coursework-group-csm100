@@ -3,19 +3,19 @@ package student;
 import game.Node;
 
 /**
- * A utility calss responsibel for selecting a 
- * adjecent  node usign previosu node information 
+ * A utility class responsibel for selecting a 
+ * adjacent  node using previous node information 
  * produced by dijkstra result.
  * 
  * ----------------------------
- * Why this calss is needed?
+ * Why this class is needed?
  * ----------------------------
  * 
- * The previous map (prevMap) form dijkstra run 
+ * The previous map (prevMap) from dijkstra run 
  * tell us about the parent info , measn how did we
  * reach this node using previous node.
  * 
- * We are allowed to move to an adjecent node at a time, 
+ * We are allowed to move to an adjacent node at a time, 
  * Therefore, aafter selecting the target we need to 
  * know the first move that begins the path. 
  */
@@ -37,7 +37,7 @@ public final class NextStep{
    *        Result produced by dijkstra algorithm
    * 
    * @return
-   *        The adjecent node that should be visited next 
+   *        The adjacent node that should be visited next 
    */
   public static Node nextStep(Node current,Node target, DijkstraResult dijkstraResult){
     /*

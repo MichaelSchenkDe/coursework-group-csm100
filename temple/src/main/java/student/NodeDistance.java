@@ -7,18 +7,18 @@ import game.Node;
  * Helper class NodeDistance used by Dijkstra
  * 
  * ------------------------
- * Why is this calss needed?
+ * Why is this class needed?
  * ------------------------
  * 
  * Java's Priority Queue stores objects.
  * During dijkstra algorithm we repeatedly needs to ask:
  * 
  * "which node currently has the smallest known distance
- * form the source node?"
+ * from the source node?"
  * 
- * Because a Node object only sotres information about the 
+ * Because a Node object only stores information about the 
  * graph itself.
- * It does not store the temperory distancebeing calculated by
+ * It does not store the temporary distancebeing calculated by
  * Dijkstra.
  * Therefore we created this class which contain
  * 
@@ -48,7 +48,7 @@ public final class NodeDistance{
    * @param node 
    *       Graph node being stored
    * @param distance 
-   *       Current shortest known distance from soure node
+   *       Current shortest known distance from source node
    */
   NodeDistance(Node node,int distance){
     this.node=node;

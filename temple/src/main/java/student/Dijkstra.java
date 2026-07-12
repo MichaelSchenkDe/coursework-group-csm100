@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  * Every edge has a weight which represents the time
- * required to travel between two adjecent nodes 
+ * required to travel between two adjacent nodes 
  * 
  * We need shortest path of each node to exit to
  * calculate safe escape.
@@ -21,17 +21,17 @@ import java.util.*;
  * 
  * A DijkstraResult object containing
  * 1. distanceMap: shortest distance from source node to every 
- *                rechable node
+ *                reachable node
  * 2. prevMap: parent nodes (will need this in creating the path)
  */
 public final class Dijkstra{
   /**
    * Computes the shortest path from one source node 
-   * to every rechable node 
+   * to every reachable node 
    */
   public DijkstraResult computePath(Node source){
     /*
-     * Stores the shortest known distance from soure
+     * Stores the shortest known distance from source
      * node to every reachable node 
      */
     Map<Node, Integer>distanceMap=new HashMap<>();
@@ -43,7 +43,7 @@ public final class Dijkstra{
     Map<Node, Node>prevMap=new HashMap<>();
 
     /*
-     * Use prioity queue, bcasue we ened small distance first
+     * Use prioity queue, because we ened small distance first
      * How to compare this node with distance, obviously we need a comparator
      * nodeDistance has nodeDistance.distance, we can compare that 
      */
@@ -80,7 +80,7 @@ public final class Dijkstra{
         continue;
       }
 
-      // we will have new version once we will cehck all the edge things
+      // we will have new version once we will check all the edge things
       
       /*
        * Visit every neighbor node 
