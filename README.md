@@ -18,31 +18,32 @@ exploration bonus, so both phases matter.
 ## Verify it works
 
 Run these from the repository root (`coursework-group-csm100`). You need Java 20
-and Gradle installed.
+installed. Gradle itself is handled by the wrapper (`./gradlew`), which downloads
+it for you on first run, so you do not need Gradle installed separately.
 
 Run all tests:
 
 ```
-gradle :temple:test
+./gradlew :temple:test
 ```
 
 If Gradle says the task is up to date and you want to force the tests to run
 again, use:
 
 ```
-gradle :temple:test --rerun-tasks
+./gradlew :temple:test --rerun-tasks
 ```
 
 Run the solution on 100 random maps and print an average score:
 
 ```
-gradle :temple:run -PchooseMain=main.TXTmain --args="-n 100"
+./gradlew :temple:run -PchooseMain=main.TXTmain --args="-n 100"
 ```
 
 Run a single map with the GUI so you can watch it:
 
 ```
-gradle :temple:run -PchooseMain=main.GUImain --args="-s 42"
+./gradlew :temple:run -PchooseMain=main.GUImain --args="-s 42"
 ```
 
 ## What we built
@@ -178,8 +179,8 @@ temple/
 
 ## Testing
 
-All tests run with JUnit 5 through `gradle :temple:test`. There are 29 in total,
-15 for exploration and 14 for escape.
+All tests run with JUnit 5 through `./gradlew :temple:test`. There are 39 in total,
+15 for exploration and 24 for escape.
 
 ### Levels of testing
 
@@ -216,22 +217,24 @@ them through `MockEscapeState`; the exploration tests use `ExploreTestGraphs` an
 |---|---|
 | `DijkstraTest` | Cheapest route is by total weight not hops, unreachable tiles are handled, and the path back to the source is rebuilt. |
 | `NextStepTest` | The next move is the correct adjacent tile, and it stays put when already on the target. |
-| `SelectNextTargetTest` | The richer safe branch is chosen, an unsafe detour is refused, and a gold branch is still taken on a tie. |
+| `SelectNextTargetTest` | The richer safe branch is chosen and an unsafe detour is refused. |
 | `EscapeIntegrationTest` | The full escape finishes on the exit and collects gold, including gold buried deep and the no-gold case. |
 | `AlwaysEscapesTest` | The real game is run over 30 seeded maps and the escape never fails, the one thing we cannot get wrong. |
+| `TargetSearchResultTest` | The branch comparator: a higher gold-per-step branch wins, and equal ratios fall through to lower travel cost and then continuability. |
+| `TargetSearchTest` | The lookahead finds gold deep in a branch and respects its depth limit, and target selection returns null when nothing is safe and prefers the cheaper branch on an equal-ratio tie. |
 
 ### Running specific tests
 
 Run one test class:
 
 ```
-gradle :temple:test --tests "student.ExploreSolverCorrectnessTest"
+./gradlew :temple:test --tests "student.ExploreSolverCorrectnessTest"
 ```
 
 Run one test method:
 
 ```
-gradle :temple:test --tests "student.DijkstraTest.choosesCheaperRouteByWeight"
+./gradlew :temple:test --tests "student.DijkstraTest.choosesCheaperRouteByWeight"
 ```
 
 ### Benchmark
@@ -248,9 +251,9 @@ this implementation:
 Reproduce them with:
 
 ```
-gradle :temple:run -PchooseMain=main.TXTmain --args="-s 42"
-gradle :temple:run -PchooseMain=main.TXTmain --args="-s -4152836868077314850"
-gradle :temple:run -PchooseMain=main.TXTmain --args="-n 100"
+./gradlew :temple:run -PchooseMain=main.TXTmain --args="-s 42"
+./gradlew :temple:run -PchooseMain=main.TXTmain --args="-s -4152836868077314850"
+./gradlew :temple:run -PchooseMain=main.TXTmain --args="-n 100"
 ```
 
 ### Troubleshooting
@@ -262,6 +265,6 @@ gradle :temple:run -PchooseMain=main.TXTmain --args="-n 100"
 
 ## Build
 
-The project uses Gradle with a Java 20 toolchain. `gradle :temple:test` and
-`gradle :temple:run` compile everything for you, so there is nothing else to set
+The project uses Gradle with a Java 20 toolchain. `./gradlew :temple:test` and
+`./gradlew :temple:run` compile everything for you, so there is nothing else to set
 up.
