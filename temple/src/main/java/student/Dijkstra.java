@@ -28,6 +28,9 @@ public final class Dijkstra{
   /**
    * Computes the shortest path from one source node 
    * to every reachable node 
+   *
+   * @param source the node to measure all shortest distances from
+   * @return the shortest distances and parent links to every reachable node
    */
   public DijkstraResult computePath(Node source){
     /*
